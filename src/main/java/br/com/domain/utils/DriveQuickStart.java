@@ -36,7 +36,6 @@ public class DriveQuickStart {
     private static final java.io.File CREDENTIALS_FOLDER //
             = new java.io.File(new java.io.File("C:\\MINHA PASTA\\pdfjoin\\PDFJOIN"), "credentials");
 
-
     //
     // Global instance of the scopes required by this quickstart. If modifying these
     // scopes, delete your previously saved credentials/ folder.
