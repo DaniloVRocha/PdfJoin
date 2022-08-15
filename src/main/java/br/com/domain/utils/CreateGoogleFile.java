@@ -63,7 +63,7 @@ public class CreateGoogleFile {
 
     public static void main(String[] args) throws IOException {
 
-        java.io.File uploadFile = new java.io.File("/home/tran/Downloads/test.txt");
+        java.io.File uploadFile = new java.io.File("C:\\Users\\Bradesco\\Downloads\\teste\\teste.txt");
 
         // Create Google File:
 

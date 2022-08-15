@@ -69,7 +69,10 @@ public class GoogleDriveUtils {
         // Build flow and trigger user authorization request.
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY,
                 clientSecrets, SCOPES).setDataStoreFactory(DATA_STORE_FACTORY).setAccessType("offline").build();
-        Credential credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
+        
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8889).build();
+        
+        Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("joinpdf2022@gmail.com");
 
         return credential;
     }

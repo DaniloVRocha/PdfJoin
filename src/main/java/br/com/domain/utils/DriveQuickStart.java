@@ -1,11 +1,13 @@
 package br.com.domain.utils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,79 +28,87 @@ import com.google.api.services.drive.model.FileList;
 
 public class DriveQuickStart {
 
-    private static final String APPLICATION_NAME = "Google Drive API Java Quickstart";
+	private static final String APPLICATION_NAME = "Google Drive API Java Quickstart";
 
-    private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    
-    private static final String CLIENT_SECRET_FILE_NAME = "client_secret.json";
+	private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
-    // Directory to store user credentials for this application.
-    private static final java.io.File CREDENTIALS_FOLDER //
-            = new java.io.File(new java.io.File("C:\\MINHA PASTA\\pdfjoin\\PDFJOIN"), "credentials");
+	private static final String CLIENT_SECRET_FILE_NAME = "client_secret.json";
 
-    //
-    // Global instance of the scopes required by this quickstart. If modifying these
-    // scopes, delete your previously saved credentials/ folder.
-    //
-    private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
+	// Directory to store user credentials for this application.
+	private static final java.io.File CREDENTIALS_FOLDER //
+			= new java.io.File(new java.io.File("C:\\MINHA PASTA\\pdfjoin\\PDFJOIN"), "credentials");
 
-    private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
+	//
+	// Global instance of the scopes required by this quickstart. If modifying these
+	// scopes, delete your previously saved credentials/ folder.
+	//
+	private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
 
-        java.io.File clientSecretFilePath = new java.io.File(CREDENTIALS_FOLDER, CLIENT_SECRET_FILE_NAME);
+	private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
 
-        if (!clientSecretFilePath.exists()) {
-            throw new FileNotFoundException("Please copy " + CLIENT_SECRET_FILE_NAME //
-                    + " to folder: " + CREDENTIALS_FOLDER.getAbsolutePath());
-        }
+		java.io.File clientSecretFilePath = new java.io.File(CREDENTIALS_FOLDER, CLIENT_SECRET_FILE_NAME);
 
-        // Load client secrets.
-        InputStream in = new FileInputStream(clientSecretFilePath);
+		if (!clientSecretFilePath.exists()) {
+			throw new FileNotFoundException("Please copy " + CLIENT_SECRET_FILE_NAME //
+					+ " to folder: " + CREDENTIALS_FOLDER.getAbsolutePath());
+		}
 
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+		// Load client secrets.
+		InputStream in = new FileInputStream(clientSecretFilePath);
 
-        // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY,
-                clientSecrets, SCOPES).setDataStoreFactory(new FileDataStoreFactory(CREDENTIALS_FOLDER))
-                        .setAccessType("offline").build();
-        
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
-        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("joinpdf2022@gmail.com");
-    }
+		// Build flow and trigger user authorization request.
+		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY,
+				clientSecrets, SCOPES).setDataStoreFactory(new FileDataStoreFactory(CREDENTIALS_FOLDER))
+						.setAccessType("offline").build();
 
-    public static void main(String... args) throws IOException, GeneralSecurityException {
+		LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
 
-        System.out.println("CREDENTIALS_FOLDER: " + CREDENTIALS_FOLDER.getAbsolutePath());
+		return new AuthorizationCodeInstalledApp(flow, receiver).authorize("joinpdf2022@gmail.com");
+	}
 
-        // 1: Create CREDENTIALS_FOLDER
-        if (!CREDENTIALS_FOLDER.exists()) {
-            CREDENTIALS_FOLDER.mkdirs();
+	public static void main(String... args) throws IOException, GeneralSecurityException {
 
-            System.out.println("Created Folder: " + CREDENTIALS_FOLDER.getAbsolutePath());
-            System.out.println("Copy file " + CLIENT_SECRET_FILE_NAME + " into folder above.. and rerun this class!!");
-            return;
-        }
+		System.out.println("CREDENTIALS_FOLDER: " + CREDENTIALS_FOLDER.getAbsolutePath());
 
-        // 2: Build a new authorized API client service.
-        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+		// 1: Create CREDENTIALS_FOLDER
+		if (!CREDENTIALS_FOLDER.exists()) {
+			CREDENTIALS_FOLDER.mkdirs();
 
-        // 3: Read client_secret.json file & create Credential object.
-        Credential credential = getCredentials(HTTP_TRANSPORT);
+			System.out.println("Created Folder: " + CREDENTIALS_FOLDER.getAbsolutePath());
+			System.out.println("Copy file " + CLIENT_SECRET_FILE_NAME + " into folder above.. and rerun this class!!");
+			return;
+		}
 
-        // 5: Create Google Drive Service.
-        Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential) //
-                .setApplicationName(APPLICATION_NAME).build();
+		// 2: Build a new authorized API client service.
+		final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
-        // Print the names and IDs for up to 10 files.
-        FileList result = service.files().list().setPageSize(10).setFields("nextPageToken, files(id, name)").execute();
-        List<File> files = result.getFiles();
-        if (files == null || files.isEmpty()) {
-            System.out.println("No files found.");
-        } else {
-            System.out.println("Files:");
-            for (File file : files) {
-                System.out.printf("%s (%s)\n", file.getName(), file.getId());
-            }
-        }
-    }
+		// 3: Read client_secret.json file & create Credential object.
+		Credential credential = getCredentials(HTTP_TRANSPORT);
+
+		// 5: Create Google Drive Service.
+		Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential) //
+				.setApplicationName(APPLICATION_NAME).build();
+
+		// Print the names and IDs for up to 10 files.
+		FileList result = service.files().list().setPageSize(10).setFields("nextPageToken, files(id, name, mimeType)")
+				.execute();
+		List<File> files = result.getFiles();
+		List<InputStream> filesPDF = new ArrayList<>();
+		if (files == null || files.isEmpty()) {
+			System.out.println("No files found.");
+		} else {
+			System.out.println("Files:");
+			for (File file : files) {
+				if (file.getMimeType().equals("application/pdf")) {
+					filesPDF.add(service.files().get(file.getId()).executeMediaAsInputStream());
+				}
+
+				System.out.printf("%s (%s)\n", file.getName(), file.getId());
+			}
+			PDFUtils util = new PDFUtils();
+			util.juntarPdf(filesPDF);
+		}
+	}
 }
