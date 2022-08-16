@@ -14,66 +14,72 @@ import com.google.api.services.drive.model.File;
 
 public class CreateGoogleFile {
 
-    // PRIVATE!
-    private static File _createGoogleFile(String googleFolderIdParent, String contentType, //
-            String customFileName, AbstractInputStreamContent uploadStreamContent) throws IOException {
+	// PRIVATE!
+	private static File _createGoogleFile(String googleFolderIdParent, String contentType, //
+			String customFileName, AbstractInputStreamContent uploadStreamContent) throws IOException {
 
-        File fileMetadata = new File();
-        fileMetadata.setName(customFileName);
+		File fileMetadata = new File();
+		fileMetadata.setName(customFileName);
 
-        List<String> parents = Arrays.asList(googleFolderIdParent);
-        fileMetadata.setParents(parents);
-        //
-        Drive driveService = GoogleDriveUtils.getDriveService();
+		List<String> parents = Arrays.asList(googleFolderIdParent);
+		fileMetadata.setParents(parents);
+		//
+		Drive driveService = GoogleDriveUtils.getDriveService();
 
-        File file = driveService.files().create(fileMetadata, uploadStreamContent)
-                .setFields("id, webContentLink, webViewLink, parents").execute();
+		File file = driveService.files().create(fileMetadata, uploadStreamContent)
+				.setFields("id, webContentLink, webViewLink, parents").execute();
 
-        return file;
-    }
+		return file;
+	}
 
-    // Create Google File from byte[]
-    public static File createGoogleFile(String googleFolderIdParent, String contentType, //
-            String customFileName, byte[] uploadData) throws IOException {
-        //
-        AbstractInputStreamContent uploadStreamContent = new ByteArrayContent(contentType, uploadData);
-        //
-        return _createGoogleFile(googleFolderIdParent, contentType, customFileName, uploadStreamContent);
-    }
+	// Create Google File from byte[]
+	public static File createGoogleFile(String googleFolderIdParent, String contentType, //
+			String customFileName, byte[] uploadData) throws IOException {
+		//
+		AbstractInputStreamContent uploadStreamContent = new ByteArrayContent(contentType, uploadData);
+		//
+		return _createGoogleFile(googleFolderIdParent, contentType, customFileName, uploadStreamContent);
+	}
 
-    // Create Google File from java.io.File
-    public static File createGoogleFile(String googleFolderIdParent, String contentType, //
-            String customFileName, java.io.File uploadFile) throws IOException {
+	// Create Google File from java.io.File
+	public static File createGoogleFile(String googleFolderIdParent, String contentType, //
+			String customFileName, java.io.File uploadFile) throws IOException {
 
-        //
-        AbstractInputStreamContent uploadStreamContent = new FileContent(contentType, uploadFile);
-        //
-        return _createGoogleFile(googleFolderIdParent, contentType, customFileName, uploadStreamContent);
-    }
+		//
+		AbstractInputStreamContent uploadStreamContent = new FileContent(contentType, uploadFile);
+		//
+		return _createGoogleFile(googleFolderIdParent, contentType, customFileName, uploadStreamContent);
+	}
 
-    // Create Google File from InputStream
-    public static File createGoogleFile(String googleFolderIdParent, String contentType, //
-            String customFileName, InputStream inputStream) throws IOException {
+	// Create Google File from InputStream
+	public static File createGoogleFile(String googleFolderIdParent, String contentType, //
+			String customFileName, InputStream inputStream) throws IOException {
 
-        //
-        AbstractInputStreamContent uploadStreamContent = new InputStreamContent(contentType, inputStream);
-        //
-        return _createGoogleFile(googleFolderIdParent, contentType, customFileName, uploadStreamContent);
-    }
+		//
+		AbstractInputStreamContent uploadStreamContent = new InputStreamContent(contentType, inputStream);
+		//
+		return _createGoogleFile(googleFolderIdParent, contentType, customFileName, uploadStreamContent);
+	}
 
-    public static void main(String[] args) throws IOException {
+	public static String saveFile(java.io.File arquivo, String nomeArquivo) {
 
-        java.io.File uploadFile = new java.io.File("C:\\Users\\Bradesco\\Downloads\\teste\\teste.txt");
+//		java.io.File uploadFile = new java.io.File("C:\\Users\\Bradesco\\Downloads\\teste\\teste.txt");
 
-        // Create Google File:
+		// Create Google File:
+		File googleFile = null;
+		try {
+			googleFile = createGoogleFile(null, "application/pdf", nomeArquivo, arquivo);
+			System.out.println("Created Google file!");
+			System.out.println("WebContentLink: " + googleFile.getWebContentLink());
+			System.out.println("WebViewLink: " + googleFile.getWebViewLink());
+			
 
-        File googleFile = createGoogleFile(null, "text/plain", "newfile.txt", uploadFile);
+			System.out.println("Done!");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return googleFile.getId();
+	}
 
-        System.out.println("Created Google file!");
-        System.out.println("WebContentLink: " + googleFile.getWebContentLink() );
-        System.out.println("WebViewLink: " + googleFile.getWebViewLink() );
-
-        System.out.println("Done!");
-    }
-    
 }

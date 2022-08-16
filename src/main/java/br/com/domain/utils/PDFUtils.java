@@ -17,13 +17,11 @@ public class PDFUtils {
 	public ByteArrayOutputStream juntarPdf(List<InputStream> escolhidos) {
 		PDFMergerUtility pdfMerger = new PDFMergerUtility();
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
+
 		try {
 			pdfMerger.setDestinationStream(os);
 			pdfMerger.addSources(escolhidos);
 			pdfMerger.mergeDocuments(null);
-			ByteArrayOutputStream arquivoFinal = os;
-			PDDocument document = PDDocument.load(arquivoFinal.toByteArray());
-			document.save("C:\\Users\\Bradesco\\Downloads\\teste\\arquivo.pdf");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -65,7 +63,4 @@ public class PDFUtils {
 			e.printStackTrace();
 		}
 	}
-
-
-
 }
