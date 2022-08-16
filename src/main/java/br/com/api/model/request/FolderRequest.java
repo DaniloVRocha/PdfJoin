@@ -1,6 +1,6 @@
 package br.com.api.model.request;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import com.sun.istack.NotNull;
@@ -10,14 +10,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PDFRequest {
-
-	@NotNull
-	@NotBlank
-	@Size(min = 3, max = 30)
-	private String name;
+public class FolderRequest {
 	
-	@NotBlank
 	@NotNull
-	private String base64;
+	@NotEmpty
+	@Size(min=3, max=20)
+	private String nameFolder;
+
 }

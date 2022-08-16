@@ -107,7 +107,7 @@ public class DriveQuickStart {
 				System.out.printf("%s (%s)\n", file.getName(), file.getId());
 			}
 			PDFUtils util = new PDFUtils();
-			util.juntarPdf(filesPDF);
+			util.mergePDF(filesPDF);
 		}
 	}
 }

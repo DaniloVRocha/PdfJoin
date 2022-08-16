@@ -8,5 +8,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class EscolhidosRequest {
-	private List<String> escolhidos;
+	private List<String> selected;
 }

@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ModelResponse {	
+public class EntityResponse {	
 	private String id;
 	private String nome;
 }

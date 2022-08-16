@@ -1,6 +1,5 @@
 package br.com.domain.service;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
@@ -16,7 +15,7 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
 import br.com.api.model.request.PDFRequest;
-import br.com.api.model.response.ModelResponse;
+import br.com.api.model.response.EntityResponse;
 import br.com.domain.model.PDF;
 import br.com.domain.repository.PDFRepository;
 import br.com.domain.utils.Base64DecodePdf;
@@ -34,7 +33,7 @@ public class PDFService {
 	private PDFRepository repository;
 	private PDFUtils pdfUtils;
 
-	public PDF salvarPDF(PDFRequest req) {
+	public PDF savePDF(PDFRequest req) {
 
 		LocalDateTime data = LocalDateTime.now();
 		OffsetDateTime dataFormat = OffsetDateTime.of(data, ZoneOffset.UTC);
@@ -42,9 +41,9 @@ public class PDFService {
 		PDF pdf = new PDF();
 
 		java.io.File file = decoder.decodeBase64(req.getBase64());
-		String id = CreateGoogleFile.saveFile(file, req.getNome());
+		String id = CreateGoogleFile.saveFile(file, req.getName());
 		pdf.setId(id);
-		pdf.setNome(req.getNome());
+		pdf.setNome(req.getName());
 		pdf.setDataInclusao(dataFormat);
 
 		repository.save(pdf);
@@ -54,8 +53,8 @@ public class PDFService {
 		return pdf;
 	}
 
-	public List<ModelResponse> listarPDFPorPasta(String nomePasta) {
-		List<ModelResponse> listaPdf = new ArrayList<>();
+	public List<EntityResponse> getFileByFolder(String nomePasta) {
+		List<EntityResponse> listaPdf = new ArrayList<>();
 		try {
 			File folder = GetSubFoldersByName.getFolderByName(nomePasta);
 			Drive service = GoogleDriveUtils.getDriveService();
@@ -64,7 +63,7 @@ public class PDFService {
 					.execute();
 			List<File> files = result.getFiles();
 			for (File file : files) {
-				ModelResponse pdf = new ModelResponse();
+				EntityResponse pdf = new EntityResponse();
 				pdf.setId(file.getId());
 				pdf.setNome(file.getName());
 				listaPdf.add(pdf);
@@ -76,28 +75,8 @@ public class PDFService {
 
 		return listaPdf;
 	}
-
-	public List<ModelResponse> listarTodasAsPastas() {
-		List<ModelResponse> listaDePastas = new ArrayList<>();
-		try {
-			Drive service = GoogleDriveUtils.getDriveService();
-			FileList result = service.files().list().setPageSize(10)
-					.setFields("nextPageToken, files(id, name, mimeType)")
-					.setQ("mimeType='application/vnd.google-apps.folder' and trashed=false").execute();
-			List<File> files = result.getFiles();
-			for (File file : files) {
-				ModelResponse folder = new ModelResponse();
-				folder.setId(file.getId());
-				folder.setNome(file.getName());
-				listaDePastas.add(folder);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return listaDePastas;
-	}
-
-	public ByteArrayOutputStream mergePdf(List<String> escolhidos) {
+	
+	public InputStream mergePDF(List<String> escolhidos) {
 		List<InputStream> filesPDF = new ArrayList<>();
 		try {
 			Drive service = GoogleDriveUtils.getDriveService();
@@ -110,7 +89,7 @@ public class PDFService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return pdfUtils.juntarPdf(filesPDF);
+		return pdfUtils.mergePDF(filesPDF);
 	}
 
 }
