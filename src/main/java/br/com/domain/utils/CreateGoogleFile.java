@@ -61,17 +61,18 @@ public class CreateGoogleFile {
 		return _createGoogleFile(googleFolderIdParent, contentType, customFileName, uploadStreamContent);
 	}
 
-	public static String saveFile(java.io.File arquivo, String nomeArquivo) {
+	public static String saveFile(String idPasta, java.io.File arquivo, String nomeArquivo) {
 
 //		java.io.File uploadFile = new java.io.File("C:\\Users\\Bradesco\\Downloads\\teste\\teste.txt");
 
 		// Create Google File:
 		File googleFile = null;
 		try {
-			googleFile = createGoogleFile(null, "application/pdf", nomeArquivo, arquivo);
+			googleFile = createGoogleFile(idPasta, "application/pdf", nomeArquivo, arquivo);
 			System.out.println("Created Google file!");
 			System.out.println("WebContentLink: " + googleFile.getWebContentLink());
 			System.out.println("WebViewLink: " + googleFile.getWebViewLink());
+			System.out.println("WebViewLink: " + googleFile.getParents());
 			
 
 			System.out.println("Done!");

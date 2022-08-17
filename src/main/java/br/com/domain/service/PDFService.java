@@ -16,8 +16,8 @@ import com.google.api.services.drive.model.FileList;
 
 import br.com.api.model.request.PDFRequest;
 import br.com.api.model.response.EntityResponse;
+import br.com.domain.model.Folder;
 import br.com.domain.model.PDF;
-import br.com.domain.repository.PDFRepository;
 import br.com.domain.utils.Base64DecodePdf;
 import br.com.domain.utils.CreateGoogleFile;
 import br.com.domain.utils.GetSubFoldersByName;
@@ -30,10 +30,10 @@ import lombok.AllArgsConstructor;
 public class PDFService {
 
 	private Base64DecodePdf decoder;
-	private PDFRepository repository;
 	private PDFUtils pdfUtils;
+	private FolderService folderService;
 
-	public PDF savePDF(PDFRequest req) {
+	public PDF savePDF(PDFRequest req, String idPasta) {
 
 		LocalDateTime data = LocalDateTime.now();
 		OffsetDateTime dataFormat = OffsetDateTime.of(data, ZoneOffset.UTC);
@@ -41,12 +41,11 @@ public class PDFService {
 		PDF pdf = new PDF();
 
 		java.io.File file = decoder.decodeBase64(req.getBase64());
-		String id = CreateGoogleFile.saveFile(file, req.getName());
+		String id = CreateGoogleFile.saveFile(idPasta, file, req.getName());
 		pdf.setId(id);
 		pdf.setNome(req.getName());
 		pdf.setDataInclusao(dataFormat);
-
-		repository.save(pdf);
+		
 		if (file.exists()) {
 			file.delete();
 		}
@@ -59,15 +58,19 @@ public class PDFService {
 			File folder = GetSubFoldersByName.getFolderByName(nomePasta);
 			Drive service = GoogleDriveUtils.getDriveService();
 			FileList result = service.files().list().setPageSize(10)
-					.setFields("nextPageToken, files(id, name, mimeType)").setQ(" '" + folder.getId() + "' in parents ")
+					.setFields("nextPageToken, files(id, name, mimeType)").setQ(" '" + folder.getId() + "' in parents and trashed=false")
 					.execute();
 			List<File> files = result.getFiles();
 			for (File file : files) {
-				EntityResponse pdf = new EntityResponse();
-				pdf.setId(file.getId());
-				pdf.setNome(file.getName());
-				listaPdf.add(pdf);
-				System.out.printf("%s (%s)\n", file.getName(), file.getId());
+				if(file.getMimeType().equals("application/pdf")) {
+					EntityResponse pdf = new EntityResponse();
+					pdf.setId(file.getId());
+					pdf.setNome(file.getName());
+					listaPdf.add(pdf);
+				}else {
+					System.out.println("Não é um pdf");
+					System.out.printf("%s (%s)\n", file.getName(), file.getId());
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -91,5 +94,32 @@ public class PDFService {
 		}
 		return pdfUtils.mergePDF(filesPDF);
 	}
-
+	
+	public List<Folder> listAllPDF() {
+		List<Folder> todosArquivos = new ArrayList<>();
+		List<EntityResponse> folders = folderService.getFolders();	
+		
+		for(EntityResponse folder : folders) {
+			List<EntityResponse> filesByFolder = getFileByFolder(folder.getNome());
+			
+			Folder pasta = new Folder();
+			pasta.setId(folder.getId());
+			pasta.setNome(folder.getNome());
+			pasta.setDocumentos(filesByFolder);
+			
+			todosArquivos.add(pasta);
+		}
+		return todosArquivos;
+	}
+	
+	public InputStream getById(String id) {
+		InputStream arquivo = null;
+		try {
+			Drive service = GoogleDriveUtils.getDriveService();
+			 arquivo = service.files().get(id).executeMediaAsInputStream();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return arquivo;
+	}
 }

@@ -5,7 +5,10 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,5 +38,11 @@ public class FolderController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public FolderResponse createNewFolder(@Valid @RequestBody FolderRequest folder) {
 		return service.createNewFolder(folder.getNameFolder());
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteFolderById(@PathVariable(value="id") String id) {
+		 service.deleteFolderById(id);
+		 return ResponseEntity.ok().build();
 	}
 }

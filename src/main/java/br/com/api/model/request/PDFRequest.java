@@ -1,7 +1,6 @@
 package br.com.api.model.request;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 import com.sun.istack.NotNull;
 
@@ -14,7 +13,7 @@ public class PDFRequest {
 
 	@NotNull
 	@NotBlank
-	@Size(min = 3, max = 30)
+	
 	private String name;
 	
 	@NotBlank

@@ -8,6 +8,8 @@ public class Base64DecodePdf {
 	
 	  public File decodeBase64(String b64) {
 		  
+		  
+		  	b64 = b64.replace("data:application/pdf;base64,", "");
 		    File file = new File("temp.pdf");
 		    try (FileOutputStream fos = new FileOutputStream(file); ) {
 		  

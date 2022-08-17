@@ -43,4 +43,14 @@ public class FolderService {
 	public FolderResponse createNewFolder(String nameFolder) {
 		return CreateFolder.createFolder(nameFolder);
 	}
+	
+	public void deleteFolderById(String id) {
+		try {
+			Drive service = GoogleDriveUtils.getDriveService();
+			service.files().delete(id);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
