@@ -47,7 +47,7 @@ public class FolderService {
 	public void deleteFolderById(String id) {
 		try {
 			Drive service = GoogleDriveUtils.getDriveService();
-			service.files().delete(id);
+			service.files().delete(id).execute();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
