@@ -35,7 +35,7 @@ public class DriveQuickStart {
 
 	// Directory to store user credentials for this application.
 	private static final java.io.File CREDENTIALS_FOLDER //
-			= new java.io.File(new java.io.File("C:\\MINHA PASTA\\pdfjoin\\PDFJOIN"), "credentials");
+			= new java.io.File(new java.io.File("").getAbsolutePath(), "credentials");
 
 	//
 	// Global instance of the scopes required by this quickstart. If modifying these

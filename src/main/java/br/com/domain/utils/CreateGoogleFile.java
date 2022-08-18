@@ -63,8 +63,6 @@ public class CreateGoogleFile {
 
 	public static String saveFile(String idPasta, java.io.File arquivo, String nomeArquivo) {
 
-//		java.io.File uploadFile = new java.io.File("C:\\Users\\Bradesco\\Downloads\\teste\\teste.txt");
-
 		// Create Google File:
 		File googleFile = null;
 		try {
@@ -77,7 +75,6 @@ public class CreateGoogleFile {
 
 			System.out.println("Done!");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return googleFile.getId();
